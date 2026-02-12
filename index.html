@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pour ma Zozo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffc0cb; /* Fond rose */
+            font-family: 'Pacifico', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden; /* Empêche de scroller */
+            text-align: center;
+        }
+
+        #container {
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 90%;
+        }
+
+        img {
+            width: 300px; /* Taille de la photo */
+            height: auto;
+            border-radius: 15px;
+            border: 5px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #d6336c;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Pacifico', cursive;
+            transition: transform 0.2s;
+        }
+
+        #btn-oui {
+            background-color: #28a745;
+            color: white;
+            box-shadow: 0 4px 0 #218838;
+        }
+
+        #btn-oui:hover {
+            transform: scale(1.1);
+        }
+
+        #btn-non {
+            background-color: #dc3545;
+            color: white;
+            box-shadow: 0 4px 0 #c82333;
+            position: relative; /* Important pour le déplacement */
+        }
+
+        /* Le message final caché au début */
+        #final-message {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            font-size: 3em;
+            color: #d6336c;
+            text-shadow: 2px 2px white;
+            width: 100%;
+        }
+
+        /* Les chats en fond */
+        .cat-bg {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.3;
+            z-index: 1;
+            animation: float 6s infinite ease-in-out;
+            pointer-events: none; /* On ne peut pas cliquer dessus */
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <img src="IMG_0962.jpeg" alt="Nous deux"> 
+        <h1>Ma chérie, veux-tu être ma Valentine ?</h1>
+        
+        <div class="buttons">
+            <button id="btn-oui">OUI !</button>
+            <button id="btn-non">Non</button>
+        </div>
+    </div>
+
+    <div id="final-message">
+        Je t'aime Zozo ❤️
+    </div>
+
+    <script>
+        const btnOui = document.getElementById('btn-oui');
+        const btnNon = document.getElementById('btn-non');
+        const container = document.getElementById('container');
+        const finalMessage = document.getElementById('final-message');
+        const body = document.body;
+
+        // Liste des smileys chat
+        const cats = ['😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾'];
+
+        // Action quand elle clique sur NON
+        btnNon.addEventListener('click', function() {
+            // Calculer une position aléatoire mais en restant dans l'écran
+            const x = Math.random() * (window.innerWidth - btnNon.offsetWidth);
+            const y = Math.random() * (window.innerHeight - btnNon.offsetHeight);
+            
+            // Appliquer la position absolue pour le bouger
+            btnNon.style.position = 'absolute';
+            btnNon.style.left = x + 'px';
+            btnNon.style.top = y + 'px';
+        });
+
+        // Action quand elle clique sur OUI
+        btnOui.addEventListener('click', function() {
+            // 1. Cacher la question et la photo
+            container.style.display = 'none';
+            
+            // 2. Afficher le message d'amour
+            finalMessage.style.display = 'block';
+
+            // 3. Lancer les feux d'artifices
+            launchFireworks();
+
+            // 4. Ajouter les chats partout
+            addCats();
+        });
+
+        function launchFireworks() {
+            var duration = 15 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        function addCats() {
+            for (let i = 0; i < 50; i++) {
+                const cat = document.createElement('div');
+                cat.classList.add('cat-bg');
+                cat.innerText = cats[Math.floor(Math.random() * cats.length)];
+                
+                // Position aléatoire
+                cat.style.left = Math.random() * 100 + 'vw';
+                cat.style.top = Math.random() * 100 + 'vh';
+                
+                // Taille variable
+                cat.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+                
+                // Délai d'animation différent pour que ce soit naturel
+                cat.style.animationDelay = Math.random() * 2 + 's';
+
+                body.appendChild(cat);
+            }
+        }
+    </script>
+</body>
+</html>
